@@ -46,5 +46,35 @@ int main()
 	int checksum = boxesWith2Repeated * boxesWith3Repeated;
 	std::cout << "The checksum for the list is: " << checksum << '\n';
 
+	bool found = false;
+	string r1, r2;
+	for (int i = 0; !found && i < lines.size(); i++) {
+		string &tmp = lines[i];
+		for (int j = i + 1; !found && j < lines.size(); j++) {
+			int dif = 0;
+			string &tmp2 = lines[j];
+			for (int k = 0; k < tmp2.size(); k++) {
+				if (tmp[k] != tmp2[k]) {
+					dif++;
+				}
+			}
+			if (dif == 1) {
+				found = true;
+				r1 = tmp;
+				r2 = tmp2;
+			}
+		}
+	}
+
+	if (found) {
+		string answer;
+		for (int i = 0; i < r1.size(); i++) {
+			if (r1[i] == r2[i]) {
+				answer += r1[i];
+			}
+		}
+		std::cout << "The common letters for the boxes are: " << answer << '\n';
+	}
+
 	return 0;
 }
