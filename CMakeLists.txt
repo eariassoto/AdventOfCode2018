@@ -7,3 +7,4 @@ project ("AdventOfCode2018")
 
 # Include sub-projects.
 add_subdirectory ("Day01")
+add_subdirectory ("Day02")

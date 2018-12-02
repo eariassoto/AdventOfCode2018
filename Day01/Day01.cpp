@@ -18,11 +18,12 @@ int main()
 		inputList.push_back(inputNumber);
 	}
 
-	/* find final freq (puzzle 1)
+	// find final freq (puzzle 1)
 	for (const auto n : inputList) {
 		frequency += n;
 	}
-	*/
+	std::cout << "Final frequency is: " << frequency << '\n';
+	frequency = 0;
 
 	// find first repeated frequency, need to iterate the list 1+ times
 	std::unordered_set<int> foundFreq;
