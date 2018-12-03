@@ -5,17 +5,32 @@
 #include <vector>
 #include <unordered_map>
 #include <algorithm>
+#include <fstream>
 
 using std::string;
 typedef std::unordered_map<char, int>::value_type hashMapValueType;
 
-int main()
+int main(int argc, char *argv[])
 {
 	std::vector<string> lines;
 	string l;
 
-	while (std::cin >> l) {
-		lines.push_back(l);
+	if (argc == 2) {
+		std::ifstream inputFile{ argv[1] };
+		if (!inputFile.is_open()) {
+			std::cout << "Could not open input file\n";
+			return 0;
+		}
+		string str;
+		while (std::getline(inputFile, str)) {
+			// Line contains string of length > 0 then save it in vector
+			if (str.size() > 0)
+				lines.push_back(str);
+		}
+	} else {
+		while (std::cin >> l) {
+			lines.push_back(l);
+		}
 	}
 
 	int boxesWith2Repeated = 0;
