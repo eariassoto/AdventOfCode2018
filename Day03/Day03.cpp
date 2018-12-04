@@ -36,11 +36,17 @@ struct Rectangle {
 	Rectangle();
 	Rectangle(const string &input);
 	Rectangle(int x, int y, int width, int height);
+	bool rectangleOverlap(const Rectangle & rect) const;
+	bool operator==(const Rectangle& other) const;
+
 	int id;
 	int x;
 	int y;
 	int width;
 	int height;
+
+private:
+	bool valueInRange(int value, int min, int max) const;
 };
 
 Rectangle::Rectangle(const string &input) {
@@ -61,11 +67,58 @@ Rectangle::Rectangle(const string &input) {
 }
 
 
-Rectangle::Rectangle(int x, int y, int width, int height):
+Rectangle::Rectangle(int x, int y, int width, int height) :
 	x{ x }, y{ y }, width{ width }, height{ height } {}
 
 Rectangle::Rectangle() :
 	x{ 0 }, y{ 0 }, width{ 0 }, height{ 0 } {}
+
+bool
+Rectangle::operator==(const Rectangle& other) const {
+	return this->x == other.x &&
+		this->y == other.y &&
+		this->width == other.width &&
+		this->height == other.height;
+}
+
+bool
+Rectangle::valueInRange(int value, int min, int max) const {
+	return (value >= min) && (value <= max);
+}
+
+bool
+Rectangle::rectangleOverlap(const Rectangle & rect) const {
+
+	int xOverlap = 0;
+	int yOverlap = 0;
+	if (valueInRange(this->x, rect.x, rect.x + rect.width)) {
+		xOverlap = (rect.x + rect.width) - this->x;
+		if (xOverlap > this->width) {
+			xOverlap = this->width;
+		}
+	}
+	else if (valueInRange(rect.x, this->x, this->x + this->width)) {
+		xOverlap = (this->x + this->width) - rect.x;
+		if (xOverlap > rect.width) {
+			xOverlap = rect.width;
+		}
+	}
+
+	if (valueInRange(this->y, rect.y, rect.y + rect.height)) {
+		yOverlap = (this->y + this->height) - this->y;
+		if (yOverlap > this->height) {
+			yOverlap = this->height;
+		}
+	}
+	else if (valueInRange(rect.y, this->y, this->y + this->height)) {
+		yOverlap = (this->y + this->height) - rect.y;
+		if (yOverlap > rect.height) {
+			yOverlap = rect.height;
+		}
+	}
+
+	return xOverlap && yOverlap;
+}
 
 
 int main(int argc, char *argv[])
@@ -112,5 +165,21 @@ int main(int argc, char *argv[])
 	});
 
 	std::cout << "Overlapped area is: " << overlappedSquares << '\n';
+
+	for (const auto &rect: rectangles) {
+		bool nothingOverlapps = true;
+		for (const auto &otherRect : rectangles) {
+			if (rect == otherRect) {
+				continue;
+			}
+			if (rect.rectangleOverlap(otherRect)) {
+				nothingOverlapps = false;
+				break;
+			}
+		}
+		if (nothingOverlapps) {
+			std::cout << "Id: " << rect.id << " is free to use\n";
+		}
+	}
 	return 0;
 }
