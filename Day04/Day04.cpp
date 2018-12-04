@@ -14,7 +14,7 @@ using std::string;
 struct Guard {
 	Guard(int id);
 	void changeState(int minute);
-	int minuteMoreSleep();
+	std::pair<int, int> getMinuteMoreSleep();
 	int id;
 	bool isAwake;
 	int minuteWentSleep;
@@ -40,12 +40,15 @@ Guard::changeState(int minute) {
 	}
 }
 
-int
-Guard::minuteMoreSleep() {
+std::pair<int, int>
+Guard::getMinuteMoreSleep() {
 	auto x = std::max_element(minutesSleepMap.begin(), minutesSleepMap.end(),
 		[](const std::pair<int, int>& p1, const std::pair<int, int>& p2) {
 		return p1.second < p2.second; });
-	return x->first;
+	if (x == minutesSleepMap.end()) {
+		return std::make_pair(0, 0);
+	}
+	return std::make_pair(x->first, x->second);
 }
 
 int main(int argc, char *argv[]) {
@@ -78,7 +81,8 @@ int main(int argc, char *argv[]) {
 	//44
 	//54
 	// Where +# is a guard ID, and the following numbers are the asleep/wake up times
-	// Input was ordered with a bash script
+	// Input was ordered with a bash script:
+	// file=`cat input.txt | sort | cut -c16-17,19- | sed "s/[0-9][0-9] Guard #/+/g" | sed "s/[a-zA-z ]//g"`
 	int lastGuardId = 0;
 	std::unordered_map<int, GuardPtr> guardsMap;
 	for (const auto& line : lines) {
@@ -98,9 +102,23 @@ int main(int argc, char *argv[]) {
 	auto largest = std::max_element(guardsMap.begin(), guardsMap.end(), cmp);
 
 	int minutesAsleep = largest->second->minutesAsleep;
-	int minuteMoreSleep = largest->second->minuteMoreSleep();
+	int minuteMoreSleep = largest->second->getMinuteMoreSleep().first;
 	std::cout << "The guard with more minutes asleep (" << minutesAsleep << ") is: " << largest->second->id << '\n';
 	std::cout << "This guard sleep the most times at minute: " << minuteMoreSleep << '\n';
-	std::cout << "Strategy 1: " << minuteMoreSleep * largest->second->id;
+	std::cout << "Strategy 1: " << minuteMoreSleep * largest->second->id << '\n';
+
+	std::shared_ptr<Guard> tmp = nullptr;
+	int maxLongTime = 0;
+	int minuteMaxTimes = 0;
+	for (const auto &guard : guardsMap) {
+		auto resPair = guard.second->getMinuteMoreSleep();
+		if (resPair.second > maxLongTime) {
+			maxLongTime = resPair.second;
+			minuteMaxTimes = resPair.first;
+			tmp = guard.second;
+		}
+	}
+	std::cout << "The guard with more times asleep (" << maxLongTime << ") at minute (" << minuteMaxTimes  << ") is: " << tmp->id << '\n';
+	std::cout << "Strategy 2: " << minuteMaxTimes * tmp->id;
 	return 0;
 }
