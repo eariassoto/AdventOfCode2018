@@ -1,4 +1,4 @@
-// Day03.cpp : Defines the entry point for the application.
+// Day04.cpp : Defines the entry point for the application.
 //
 #include <iostream>
 #include <string>
