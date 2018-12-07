@@ -25,6 +25,7 @@ struct Point {
 	Point(int id, int x, int y) : id{ id }, x{ x }, y{ y }, isOuter{ false }{}
 	
 	int getIdForClosestPoint(const std::vector<Point>& points);
+	int getSumDistances(const std::vector<Point>& points);
 	int id;
 	int x;
 	int y;
@@ -54,6 +55,16 @@ Point::getIdForClosestPoint(const std::vector<Point>& points) {
 	return distanceList[0].second;
 }
 
+
+int
+Point::getSumDistances(const std::vector<Point>& points) {
+	int sumDistances = 0;
+	for (const Point &otherPoint : points) {
+		sumDistances += calculateManhattanDistance(otherPoint);
+	}
+	
+	return sumDistances;
+}
 
 int main(int argc, char *argv[]) {
 	string input;
@@ -123,7 +134,21 @@ int main(int argc, char *argv[]) {
 			largestAreaId = p.id;
 		}
 	}
-	std::cout << distanceMap[largestAreaId] << '\n';
+	std::cout << "Largest non infinite area: " << distanceMap[largestAreaId] << '\n';
+
+	int area = 0;
+	int range = 10000;
+	for (int x = minX; x <= maxX; x++) {
+		for (int y = minY; y <= maxY; y++) {
+			Point tmp{ -1, x, y };
+			int sumDistances = tmp.getSumDistances(points);
+			if (sumDistances < 10000) {
+				area++;
+			}
+		}
+	}
+
+	std::cout << "Area of region containing all points in a range of " << range << " is " << area << '\n';
 
 	return 0;
 }
