@@ -54,6 +54,25 @@ int sumMetadata(std::shared_ptr<Node> node) {
 	return metadata;
 }
 
+int sumNodeValues(std::shared_ptr<Node> node) {
+	int metadata = 0;
+	if (node->childrens.size() == 0) {
+		for (const int m : node->metadata) {
+			metadata += m;
+		}
+		return metadata;
+	}
+	for (const int m : node->metadata) {
+		try {
+			metadata += sumNodeValues(node->childrens.at(m - 1));
+		}
+		catch (std::exception e) {
+			// skip
+		}
+	}
+	return metadata;
+}
+
 int main(int argc, char *argv[]) {
 	string input;
 
@@ -75,6 +94,8 @@ int main(int argc, char *argv[]) {
 	processInputTree(root, inputVec);
 
 	std::cout << "Sum of all metadatas is: " << sumMetadata(root) << '\n';
+
+	std::cout << "Sum of all node values is: " << sumNodeValues(root) << '\n';
 
 	return 0;
 }
